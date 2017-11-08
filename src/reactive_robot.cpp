@@ -1,8 +1,6 @@
 #include <ros/ros.h>
 #include <sensor_msgs/LaserScan.h>
 #include <sensor_msgs/Range.h>
-#include <std_msgs/Float32.h>
-#include <std_msgs/Bool.h>
 #include <geometry_msgs/Twist.h>
 #include <stdlib.h>
 #include <math.h>
@@ -25,13 +23,11 @@ float rad = 0.40; //angulo de rotacao
 void sonarCallback_sonar_1(const sensor_msgs::Range::ConstPtr& m)
 {
 	dist_sonar1 = m->range;
-	//ROS_INFO_STREAM("\n dist_sonar1: " << dist_sonar1);
 }
 
 void sonarCallback_sonar_2(const sensor_msgs::Range::ConstPtr& m)
 {
 	dist_sonar2 = m->range;
-	ROS_INFO_STREAM("\n dist_sonar2: " << dist_sonar2);
 }
 
 void sonarCallback_sonar_0(const sensor_msgs::Range::ConstPtr& m)
@@ -39,8 +35,10 @@ void sonarCallback_sonar_0(const sensor_msgs::Range::ConstPtr& m)
 	geometry_msgs:: Twist msg;
 
 	dist_sonar0 = m->range;
-	//ROS_INFO_STREAM("\n dist_sonar0: " << dist_sonar0);
-
+	std::cout << "\n dist_sonar0: " << dist_sonar0;
+	std::cout << "\n dist_sonar1: " << dist_sonar1;
+	std::cout << "\n dist_sonar2: " << dist_sonar2 << std::endl;
+	
 	ros::Rate r(2);
 
 	if(fase == 0){	//procura a parede mais proxima 
@@ -79,26 +77,16 @@ void sonarCallback_sonar_0(const sensor_msgs::Range::ConstPtr& m)
 					msg.linear.x = vel;
 				}
 				else{ //perto da parede do lado
-					//msg.angular.z = rad;
 					msg.linear.x = vel;
 				}
 			}
-			else{/*
-				ROS_INFO_STREAM("\n entrou ");
-				if(dist_sonar2 > (d_max+2)){ //longissimo da parede do lado
-					msg.angular.z = -rad*6;
-					msg.linear.x = vel;
-
-				}*/
+			else{
 				if(dist_sonar2 > (d_max+1)){ //longe de mais da parede do lado
 					msg.angular.z = -rad;
-					//msg.linear.x = vel;
-
 				}
 				else{ //longe da parede do lado
 					msg.angular.z = -rad;
 					msg.linear.x = vel;
-
 				}
 			}
 			
@@ -130,7 +118,7 @@ void sonarCallback_sonar_0(const sensor_msgs::Range::ConstPtr& m)
 int main(int argc, char **argv) 
 {
 	ros::init(argc, argv, "reactive_robot");
-    	ros::NodeHandle NodeHandle; 
+    ros::NodeHandle NodeHandle; 
 
 	ros::Subscriber sonar_subscriber = NodeHandle.subscribe("robot0/sonar_0", 1, sonarCallback_sonar_0);
 
@@ -140,10 +128,10 @@ int main(int argc, char **argv)
 
 	pub = NodeHandle.advertise <geometry_msgs:: Twist > ("robot0/cmd_vel" , 1000) ;
 
-    	srand(time(0));
+	srand(time(0));
 
-    	ros::spin(); 
-    
-    	return 0; 
+	ros::spin(); 
+
+	return 0; 
 }
 
