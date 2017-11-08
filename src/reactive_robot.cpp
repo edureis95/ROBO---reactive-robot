@@ -79,7 +79,7 @@ void sonarCallback_sonar_0(const sensor_msgs::Range::ConstPtr& m)
 					msg.linear.x = vel;
 				}
 				else{ //perto da parede do lado
-					msg.angular.z = rad;
+					//msg.angular.z = rad;
 					msg.linear.x = vel;
 				}
 			}
